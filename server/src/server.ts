@@ -3,10 +3,13 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import path from 'path';
 import cors from 'cors';
+import dotenv from 'dotenv';
 
 import { typeDefs, resolvers } from './schemas/index.js';
 import db from './config/connection.js';
 import { authenticateTokenGraphQL } from './services/auth.js';
+
+dotenv.config();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
