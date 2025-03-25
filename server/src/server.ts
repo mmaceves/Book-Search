@@ -5,7 +5,8 @@ import path from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import { typeDefs, resolvers } from './schemas/index.js';
+import typeDefs from './schemas/typeDefs.js';
+import resolvers from './schemas/resolvers.js';
 import db from './config/connection.js';
 import { authenticateTokenGraphQL } from './services/auth.js';
 

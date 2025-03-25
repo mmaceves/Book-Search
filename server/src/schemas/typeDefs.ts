@@ -1,36 +1,49 @@
-const typeDefs = `
-type Query {
-me: User
-}
+import { gql } from 'apollo-server-express';
 
-type Mutation {
-login(email: String!, password: String!): Auth
-addUser(username: String!, email: String!, password: String!): Auth
-saveBook(bookAuthor: [], bookDescription: String!, bookTitle: String!, bookId: String!, image: String, link: String): User
-deleteBook(bookId: String!): User
-}
+const typeDefs = gql`
+  type Query {
+    me: User
+    users: [User]
+    user(id: ID!): User
+  }
 
-type User {
-_id: ID
-username: String
-email: String
-bookCount: Int
-savedBooks: [Book]
-}
+  type Mutation {
+    login(email: String!, password: String!): Auth
+    addUser(username: String!, email: String!, password: String!): Auth
+    saveBook(bookData: BookInput!): User
+    deleteBook(bookId: ID!): User
+  }
 
-type Book {
-bookId: String
-authors: [String]
-description: String
-title: String
-image: String
-link: String
-}
+  type User {
+    _id: ID
+    username: String
+    email: String
+    bookCount: Int
+    savedBooks: [Book]
+  }
 
-type Auth {
-token: ID!
-user: User
-}
+  type Book {
+    bookId: String
+    authors: [String]
+    description: String
+    title: String
+    image: String
+    link: String
+  }
+
+  type Auth {
+    token: ID!
+    user: User
+  }
+
+  input BookInput {
+    bookId: String
+    authors: [String]
+    description: String
+    title: String
+    image: String
+    link: String
+  }
 `;
 
 export default typeDefs;
