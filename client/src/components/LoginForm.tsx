@@ -5,7 +5,6 @@ import { useMutation } from '@apollo/client';
 
 import Auth from '../utils/auth';
 import { LOGIN_USER } from '../utils/mutations';
-import type { User } from '../models/User';
 
 interface LoginFormProps {
   handleModalClose: () => void;
@@ -16,7 +15,7 @@ const LoginForm = ({ handleModalClose }: LoginFormProps) => {
   const [validated, setValidated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-  const [loginUser] = useMutation<{ loginUser: { token: string } }, { email: string; password: string }>(LOGIN_USER);
+  const [login] = useMutation<{ login: { token: string } }, { email: string; password: string }>(LOGIN_USER);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -36,15 +35,15 @@ const LoginForm = ({ handleModalClose }: LoginFormProps) => {
     }
 
     try {
-      const { data } = await loginUser({
+      const { data } = await login({
         variables: { email: userFormData.email, password: userFormData.password },
       });
 
       if (!data) {
-        throw new Error('something went wrong!');
+        throw new Error('Something went wrong!');
       }
 
-      Auth.login(data.loginUser.token);
+      Auth.login(data.login.token);
       handleModalClose();
     } catch (err) {
       console.error(err);

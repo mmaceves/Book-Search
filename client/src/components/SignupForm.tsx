@@ -5,7 +5,6 @@ import { useMutation } from '@apollo/client';
 
 import Auth from '../utils/auth';
 import { ADD_USER } from '../utils/mutations';
-import type { User } from '../models/User';
 
 interface SignupFormProps {
   handleModalClose: () => void;
@@ -41,7 +40,7 @@ const SignupForm = ({ handleModalClose }: SignupFormProps) => {
       });
 
       if (!data) {
-        throw new Error('something went wrong!');
+        throw new Error('Something went wrong!');
       }
 
       Auth.login(data.addUser.token);

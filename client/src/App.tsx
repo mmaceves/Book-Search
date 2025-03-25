@@ -1,16 +1,17 @@
-import './App.css';
-import { Outlet } from 'react-router-dom';
-import { ApolloProvider } from '@apollo/client';
-import Navbar from './components/Navbar';
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
+import App from './App';
+import Auth from './utils/auth';
+
 const httpLink = createHttpLink({
-  uri: 'http://localhost:3001/graphql', // Ensure this matches your server's GraphQL endpoint
+  uri: 'http://localhost:3001/graphql', // Ensure this URL is correct
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('token');
+  const token = Auth.getToken();
   return {
     headers: {
       ...headers,
@@ -24,13 +25,9 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-function App() {
-  return (
-    <ApolloProvider client={client}>
-      <Navbar />
-      <Outlet />
-    </ApolloProvider>
-  );
-}
-
-export default App;
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  document.getElementById('root')
+);
