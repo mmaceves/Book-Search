@@ -2,9 +2,8 @@ import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
-
-import Auth from '../utils/auth';
 import { ADD_USER } from '../utils/mutations';
+import Auth from '../utils/auth';
 
 interface SignupFormProps {
   handleModalClose: () => void;
@@ -28,7 +27,6 @@ const SignupForm = ({ handleModalClose }: SignupFormProps) => {
     // check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
       setValidated(true);
       return;

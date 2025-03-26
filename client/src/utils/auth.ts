@@ -9,7 +9,7 @@ interface UserToken {
 class AuthService {
   // get user data
   getProfile() {
-    return jwtDecode(this.getToken() || '');
+    return jwtDecode<UserToken>(this.getToken() || '');
   }
 
   // check if user's logged in

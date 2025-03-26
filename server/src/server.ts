@@ -1,14 +1,11 @@
-import express from 'express';
-import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import path from 'path';
-import cors from 'cors';
-import dotenv from 'dotenv';
-
-import typeDefs from './schemas/typeDefs.js';
-import resolvers from './schemas/resolvers.js';
-import db from './config/connection.js';
-import { authenticateTokenGraphQL } from './services/auth.js';
+import express from "express";
+import path from "node:path";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { typeDefs, resolvers } from "./schemas/index.js";
+import { authenticateTokenGraphQL } from "./services/auth.js";
+import db from "./config/connection.js";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -19,8 +16,11 @@ const server = new ApolloServer({
   resolvers,
 });
 
-const context = async ({ req }: { req: express.Request }) => {
-  // Apply authentication middleware for GraphQL
+interface Context {
+  req: express.Request;
+}
+
+const context = async ({ req }: { req: express.Request }): Promise<Context> => {
   await authenticateTokenGraphQL({ req });
   return { req };
 };
@@ -28,20 +28,19 @@ const context = async ({ req }: { req: express.Request }) => {
 const startApolloServer = async () => {
   await server.start();
 
-  app.use(cors({
-    origin: "http://localhost:3000", // Allow frontend
-    credentials: true, // If using cookies or authentication
-  }));
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use('/graphql', expressMiddleware(server, { context }));
+  app.use(
+    '/graphql', expressMiddleware(server, {
+      context,
+    })
+  );
 
   // if we're in production, serve client/build as static assets
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../../client/build')));
-
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(__dirname, '../../client/build/index.html'));
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../../client/build")));
+    app.get("*", (_req, res) => {
+      res.sendFile(path.join(__dirname, "../../client/build/index.html"));
     });
   }
 

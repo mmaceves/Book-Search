@@ -3,55 +3,35 @@ import { signToken } from '../services/auth.js';
 
 const resolvers = {
   Query: {
-    me: async (_: any, __: any, context: any) => {
-      if (!context.req.user) {
-        throw new Error('Not authenticated');
+    me: async (_parent: unknown, _args: unknown, context: any) => {
+      if (context.req.user) {
+        const currentUser = await User.findOne({ _id: context.req.user._id });
+        return currentUser;
       }
-      return User.findById(context.req.user._id);
+      throw new Error('Failed to authenticate');
     },
-    users: async () => {
-      try {
-        const users = await User.find();
-        return users;
-      } catch (error) {
-        throw new Error('Error fetching users');
-      }
-    },
-    user: async (_: any, { id }: { id: string }) => {
-      try {
-        const user = await User.findById(id);
-        if (!user) {
-          throw new Error('User not found');
-        }
-        return user;
-      } catch (error) {
-        throw new Error('Error fetching user');
-      }
-    }
   },
   Mutation: {
-    login: async (_: any, { email, password }: { email: string; password: string }) => {
-      const user = await User.findOne({ email });
+    login: async (_parent: unknown, { email, password }: { email: string; password: string }) => {
+      const user = await User.findOne({ email }).select('+password');
       if (!user) {
-        throw new Error("Can't find this user");
+        throw new Error('Incorrect credentials');
       }
-
       const correctPw = await user.isCorrectPassword(password);
       if (!correctPw) {
-        throw new Error('Wrong password!');
+        throw new Error('Incorrect credentials');
       }
-
       const token = signToken(user.username, user.email, user._id);
       return { token, user };
     },
-    addUser: async (_: any, { username, email, password }: { username: string; email: string; password: string }) => {
+    addUser: async (_parent: unknown, { username, email, password }: { username: string; email: string; password: string }) => {
       const user = await User.create({ username, email, password });
       const token = signToken(user.username, user.email, user._id);
       return { token, user };
     },
-    saveBook: async (_: any, { bookData }: { bookData: any }, context: any) => {
+    saveBook: async (_parent: unknown, { bookData }: { bookData: any }, context: any) => {
       if (!context.req.user) {
-        throw new Error('Not authenticated');
+        throw new Error('You must be logged in to save a book');
       }
 
       const updatedUser = await User.findOneAndUpdate(
@@ -62,9 +42,9 @@ const resolvers = {
 
       return updatedUser;
     },
-    deleteBook: async (_: any, { bookId }: { bookId: string }, context: any) => {
+    removeBook: async (_parent: unknown, { bookId }: { bookId: string }, context: any) => {
       if (!context.req.user) {
-        throw new Error('Not authenticated');
+        throw new Error('You must be logged in to remove a book');
       }
 
       const updatedUser = await User.findOneAndUpdate(
@@ -74,8 +54,8 @@ const resolvers = {
       );
 
       return updatedUser;
-    }
-  }
+    },
+  },
 };
 
 export default resolvers;

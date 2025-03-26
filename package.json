@@ -19,11 +19,13 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/jwt-decode": "^2.2.1",
     "concurrently": "^8.2.0"
   },
   "dependencies": {
     "@apollo/client": "^3.13.5",
     "@apollo/server": "^4.11.3",
+    "apollo-server-express": "^3.13.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "graphql": "^16.10.0"
